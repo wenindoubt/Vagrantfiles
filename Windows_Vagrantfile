@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# ~/Documents/vagrant/environments/production/manifests/site.pp
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "windows_2012_r2_standard"
+
+  config.vbguest.auto_update = false
+
+  config.vm.network "forwarded_port", guest: 3389, host: 3389
+
+  config.vm.communicator      = "winrm"
+  config.winrm.username       = "vagrant"
+  config.winrm.password       = "vagrant"
+  config.vm.guest             = :windows
+  config.ssh.insert_key       = false
+  config.ssh.private_key_path = "PATH_TO_ID_RSA"
+
+  config.vm.hostname = "contoso-001"
+
+  config.vm.provision "puppet" do |puppet|
+    puppet.environment_path = "environments"
+    puppet.environment      = "production"
+    puppet.facter = {
+      "attribute_one"    => "my_attribute_one",
+      "attribute_two"    => "my_attribute_two",
+      "attribute_three"  => "my_attribute_three",
+    }
+    puppet.options = "--verbose"
+  end
+end
